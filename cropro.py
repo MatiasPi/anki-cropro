@@ -30,6 +30,7 @@ from anki.notes import Note
 
 MAX_DISPLAYED_NOTES = 100
 ENABLE_DEBUG_LOG = False
+SHORTCUT = "CTRL+B"
 
 #############################################################################
 ### END OPTIONS
@@ -339,6 +340,7 @@ class MainDialog(QDialog):
 def addMenuItem():
     a = QAction(mw)
     a.setText('Cross Profile Search and Import')
+    a.setShortcut(SHORTCUT)
     mw.form.menuTools.addAction(a)
     a.triggered.connect(MainDialog)
 
