@@ -23,6 +23,7 @@ from aqt.utils import showInfo
 from anki.utils import stripHTMLMedia
 from anki import Collection
 from anki.notes import Note
+from anki.sound import play
 
 #############################################################################
 ### BEGIN OPTIONS
@@ -30,7 +31,8 @@ from anki.notes import Note
 
 MAX_DISPLAYED_NOTES = 100
 ENABLE_DEBUG_LOG = False
-SHORTCUT = "CTRL+B"
+SHORTCUT = ""
+DEFAULT_DECK_DESTINATION = ""
 
 #############################################################################
 ### END OPTIONS
@@ -114,7 +116,7 @@ class MainDialog(QDialog):
         self.noteListView.setModel(self.noteListModel)
         self.noteListView.setSelectionMode(self.noteListView.ExtendedSelection)
         self.noteListView.doubleClicked.connect(self.doImport)
-
+        self.noteListView.pressed.connect(self.playAudio)
         currentProfileNameLabel = QLabel(mw.pm.name)
         currentProfileNameLabelFont = QFont()
         currentProfileNameLabelFont.setBold(True)
@@ -123,14 +125,20 @@ class MainDialog(QDialog):
         self.currentProfileDeckCombo = QComboBox()
         currentProfileDecks = mw.col.decks.all()
         currentProfileDecks.sort(key=lambda d: d['name'])
-        selectedDeckId = mw.col.decks.selected()
         selectedIndex = None
-        for idx, deck in enumerate(currentProfileDecks):
-            self.currentProfileDeckCombo.addItem(deck['name'], deck['id'])
-            if deck['id'] == selectedDeckId:
-                selectedIndex = idx
+        if DEFAULT_DECK_DESTINATION is not '':
+            for idx, deck in enumerate(currentProfileDecks):
+                self.currentProfileDeckCombo.addItem(deck['name'], deck['id'])
+                if deck['name'] == DEFAULT_DECK_DESTINATION:
+                    selectedIndex = idx
+        else:
+            selectedDeckId = mw.col.decks.selected()
+            for idx, deck in enumerate(currentProfileDecks):
+                self.currentProfileDeckCombo.addItem(deck['name'], deck['id'])
+                if deck['id'] == selectedDeckId:
+                    selectedIndex = idx
         if selectedIndex is not None:
-            self.currentProfileDeckCombo.setCurrentIndex(selectedIndex)
+            self.currentProfileDeckCombo.setCurrentIndex(selectedIndex)        
 
         statsRow = QVBoxLayout()
 
@@ -180,6 +188,20 @@ class MainDialog(QDialog):
 
         self.setWindowTitle('Cross Profile Search and Import')
         self.exec_()
+    
+    def playAudio(self):
+        # get the note ids of all selected notes
+        noteIds = [self.noteListModel.itemFromIndex(idx).data() for idx in self.noteListView.selectedIndexes()]
+        firstCardId = noteIds[0]
+        firstCard = self.otherProfileCollection.getNote(firstCardId)
+        audioPath = ''
+        for field in firstCard.fields:
+            res = re.search(r"\[sound:(.*)\]", field)
+            if res is not None:
+                audioPath = res.group(1)
+                break
+        if audioPath is not '':
+            play(audioPath)
 
     def otherProfileComboChange(self):
         newProfileName = self.otherProfileCombo.currentText()
@@ -340,7 +362,8 @@ class MainDialog(QDialog):
 def addMenuItem():
     a = QAction(mw)
     a.setText('Cross Profile Search and Import')
-    a.setShortcut(SHORTCUT)
+    if SHORTCUT is not '':
+        a.setShortcut(SHORTCUT)
     mw.form.menuTools.addAction(a)
     a.triggered.connect(MainDialog)
 
