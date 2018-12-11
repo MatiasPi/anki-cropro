@@ -196,7 +196,7 @@ class MainDialog(QDialog):
         firstCard = self.otherProfileCollection.getNote(firstCardId)
         audioPath = ''
         for field in firstCard.fields:
-            res = re.search(r"\[sound:(.*)\]", field)
+            res = re.search(r"\[sound:(.*?)\]", field)
             if res is not None:
                 audioPath = res.group(1)
                 break
