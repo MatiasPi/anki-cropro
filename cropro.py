@@ -109,6 +109,14 @@ class MainDialog(QDialog):
 
         self.noteCountLabel = QLabel('')
 
+        self.audioCheckBox = QCheckBox("Play audio")
+        self.audioCheckBox.setLayoutDirection(Qt.RightToLeft)
+        self.audioCheckBox.setChecked(True)
+
+        noteCountAndAudioRow = QHBoxLayout()
+        noteCountAndAudioRow.addWidget(self.noteCountLabel)
+        noteCountAndAudioRow.addWidget(self.audioCheckBox)
+
         self.noteListView = QListView()
         self.noteListView.setResizeMode(self.noteListView.Fixed)
         self.noteListView.setEditTriggers(self.noteListView.NoEditTriggers)
@@ -176,7 +184,7 @@ class MainDialog(QDialog):
             noOtherProfilesWarningLabel.setStyleSheet('QLabel { color : red; }')
             mainVbox.addWidget(noOtherProfilesWarningLabel)
         mainVbox.addLayout(filterRow)
-        mainVbox.addWidget(self.noteCountLabel)
+        mainVbox.addLayout(noteCountAndAudioRow)
         mainVbox.addWidget(self.noteListView)
         mainVbox.addLayout(statsRow)
         mainVbox.addLayout(importRow)
@@ -190,6 +198,8 @@ class MainDialog(QDialog):
         self.exec_()
     
     def playAudio(self):
+        if not self.audioCheckBox.isChecked():
+            return
         # get the note ids of all selected notes
         noteIds = [self.noteListModel.itemFromIndex(idx).data() for idx in self.noteListView.selectedIndexes()]
         firstCardId = noteIds[0]
