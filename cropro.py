@@ -108,13 +108,18 @@ class MainDialog(QDialog):
         filterRow.addWidget(filterButton)
 
         self.noteCountLabel = QLabel('')
+        self.noteCountLabel.setMinimumSize(QSize(50,0))
 
         self.audioCheckBox = QCheckBox("Play audio")
-        self.audioCheckBox.setLayoutDirection(Qt.RightToLeft)
         self.audioCheckBox.setChecked(True)
+        self.audioCheckBox.setMinimumSize(QSize(50,0))
+
+        horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         noteCountAndAudioRow = QHBoxLayout()
+        noteCountAndAudioRow.setContentsMargins(0, 0, 0, 0)
         noteCountAndAudioRow.addWidget(self.noteCountLabel)
+        noteCountAndAudioRow.addItem(horizontalSpacer)
         noteCountAndAudioRow.addWidget(self.audioCheckBox)
 
         self.noteListView = QListView()
