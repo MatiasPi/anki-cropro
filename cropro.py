@@ -139,7 +139,7 @@ class MainDialog(QDialog):
         currentProfileDecks = mw.col.decks.all()
         currentProfileDecks.sort(key=lambda d: d['name'])
         selectedIndex = None
-        if DEFAULT_DECK_DESTINATION is not '':
+        if DEFAULT_DECK_DESTINATION != '':
             for idx, deck in enumerate(currentProfileDecks):
                 self.currentProfileDeckCombo.addItem(deck['name'], deck['id'])
                 if deck['name'] == DEFAULT_DECK_DESTINATION:
@@ -150,7 +150,7 @@ class MainDialog(QDialog):
                 self.currentProfileDeckCombo.addItem(deck['name'], deck['id'])
                 if deck['id'] == selectedDeckId:
                     selectedIndex = idx
-        if selectedIndex is not None:
+        if selectedIndex != None:
             self.currentProfileDeckCombo.setCurrentIndex(selectedIndex)        
 
         statsRow = QVBoxLayout()
@@ -212,10 +212,10 @@ class MainDialog(QDialog):
         audioPath = ''
         for field in firstCard.fields:
             res = re.search(r"\[sound:(.*?)\]", field)
-            if res is not None:
+            if res != None:
                 audioPath = res.group(1)
                 break
-        if audioPath is not '':
+        if audioPath != '':
             play(audioPath)
 
     def otherProfileComboChange(self):
@@ -377,7 +377,7 @@ class MainDialog(QDialog):
 def addMenuItem():
     a = QAction(mw)
     a.setText('Cross Profile Search and Import')
-    if SHORTCUT is not '':
+    if SHORTCUT != '':
         a.setShortcut(SHORTCUT)
     mw.form.menuTools.addAction(a)
     a.triggered.connect(MainDialog)
